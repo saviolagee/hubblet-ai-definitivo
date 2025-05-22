@@ -1,0 +1,1 @@
+# Inicialização do módulo FAISS para indexação vetorial local

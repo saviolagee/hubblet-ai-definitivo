@@ -1,0 +1,47 @@
+como # Ignorar arquivos de ambiente virtual
+venv/
+.venv/
+
+# Ignorar arquivos de variáveis de ambiente
+.env
+
+# Ignorar arquivos de cache e temporários
+__pycache__/
+*.pyc
+*.tmp
+
+# Ignorar diretórios de dados gerados
+knowledge/faiss_index/
+memories/users/
+frontend/assistentes_salvos/
+
+# Ignorar arquivos específicos do sistema operacional (Windows)
+Thumbs.db
+Desktop.ini
+
+# Ignorar arquivos de log
+*.log
+
+# Ignorar arquivos de configuração local
+*.local.config
+
+# Ignorar arquivos de dados grandes ou binários
+# *.bin
+# *.dat
+
+# Ignorar arquivos de IDEs (ex: VS Code)
+.vscode/
+
+# Ignorar arquivos de dependências (Node.js, se aplicável)
+# node_modules/
+
+# Ignorar arquivos de pacotes Python
+# dist/
+# build/
+# *.egg-info/
+
+# Ignorar arquivos de banco de dados (se aplicável)
+# *.sqlite3
+
+# Ignorar arquivos de upload temporários (se aplicável)
+# tempfile.*

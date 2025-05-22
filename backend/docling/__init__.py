@@ -1,0 +1,1 @@
+# Inicialização do módulo Docling para processamento de conhecimento

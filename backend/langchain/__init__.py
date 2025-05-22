@@ -1,0 +1,1 @@
+# Inicialização do módulo LangChain para orquestração de IA

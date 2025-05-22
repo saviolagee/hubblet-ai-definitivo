@@ -1,0 +1,8 @@
+streamlit
+langchain_community
+langchain
+faiss-cpu
+docling
+openai
+requests
+mem0ai

@@ -1,0 +1,1 @@
+# Inicialização do módulo mem0 para memória persistente dos usuários
