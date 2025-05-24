@@ -1,0 +1,144 @@
+{
+  "chat_sessions": [
+    {
+      "id": "cdaab222-4d47-4f43-a1a9-017445d5ebb2",
+      "user_id": "sav",
+      "title": "Nova Conversa",
+      "created_at": "2025-05-22T15:52:47.187387",
+      "updated_at": "2025-05-22T15:52:55.207194",
+      "messages": [
+        {
+          "role": "user",
+          "content": "teste",
+          "created_at": "2025-05-22T15:52:53.382630"
+        },
+        {
+          "role": "assistant",
+          "content": "Olá! Como posso ajudá-lo hoje? Se você está buscando criar um texto persuasivo para uma campanha de marketing, precisa de ideias para postagens em redes sociais ou qualquer outra necessidade relacionada a copywriting, estou aqui para ajudar.",
+          "created_at": "2025-05-22T15:52:55.207187"
+        }
+      ]
+    },
+    {
+      "id": "492d8e96-9f16-41d4-90d3-33cb1f3539a1",
+      "user_id": "sav",
+      "title": "Chat com Copy Ai",
+      "created_at": "2025-05-24T15:40:53.603289+00:00",
+      "updated_at": "2025-05-24T15:41:08.818034+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "teste sou o sav",
+          "created_at": "2025-05-24T15:41:06.592096+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Olá! Como posso ajudá-lo hoje? Se precisar de assistência com copywriting ou marketing, estou aqui para ajudar. Se tiver alguma dúvida ou solicitação específica, fique à vontade para me informar!",
+          "created_at": "2025-05-24T15:41:08.818034+00:00"
+        }
+      ]
+    },
+    {
+      "id": "2eb97987-4048-4c32-a6df-963d25901417",
+      "user_id": "sav",
+      "title": "Chat com Copy Ai (1)",
+      "created_at": "2025-05-24T15:41:24.229800+00:00",
+      "updated_at": "2025-05-24T15:41:24.229800+00:00",
+      "messages": []
+    },
+    {
+      "id": "280491c3-3308-48be-8013-1deb74393572",
+      "user_id": "sav",
+      "title": "Chat com Copy Ai (2)",
+      "created_at": "2025-05-24T15:41:57.206249+00:00",
+      "updated_at": "2025-05-24T15:41:57.206249+00:00",
+      "messages": []
+    },
+    {
+      "id": "03e1cd22-c6cc-471c-991e-73621f9dc5d8",
+      "user_id": "sav",
+      "title": "Chat com Copy Ai (3)",
+      "created_at": "2025-05-24T15:47:56.423331+00:00",
+      "updated_at": "2025-05-24T15:48:06.176093+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "sou o sav",
+          "created_at": "2025-05-24T15:48:04.472832+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Olá, Sav! Como posso ajudá-lo hoje? Se precisar de assistência com algum texto publicitário, descrição de produto ou conteúdo de marketing, estou aqui para ajudar. Aguardo suas instruções!",
+          "created_at": "2025-05-24T15:48:06.176093+00:00"
+        }
+      ]
+    },
+    {
+      "id": "9ed7438b-4d7c-4c49-967a-710a6ea4b6ba",
+      "user_id": "sav",
+      "title": "Chat com Copy Ai (4)",
+      "created_at": "2025-05-24T15:48:09.569196+00:00",
+      "updated_at": "2025-05-24T15:48:15.023700+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "sou o sav",
+          "created_at": "2025-05-24T15:48:12.912951+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Olá, Sav! Como posso ajudá-lo hoje com suas necessidades de copywriting e marketing? Estou aqui para auxiliá-lo na criação de textos persuasivos e eficazes para suas campanhas publicitárias e conteúdos de marketing. Se tiver alguma solicitação específica, por favor, me informe!",
+          "created_at": "2025-05-24T15:48:15.023700+00:00"
+        }
+      ]
+    },
+    {
+      "id": "c99caaeb-4e6a-43f5-a37f-0ac6bd7fe5a9",
+      "user_id": "teste",
+      "title": "Chat com Copy Ai",
+      "created_at": "2025-05-24T15:49:54.727725+00:00",
+      "updated_at": "2025-05-24T15:50:17.735320+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "ola teste",
+          "created_at": "2025-05-24T15:50:08.815991+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Olá! Como posso te ajudar hoje?",
+          "created_at": "2025-05-24T15:50:09.992298+00:00"
+        },
+        {
+          "role": "user",
+          "content": "quem é vc?",
+          "created_at": "2025-05-24T15:50:16.456639+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Eu sou o copy AI, um assistente projetado para criar textos publicitários e conteúdos de marketing de alta qualidade. Posso ajudar a desenvolver copy persuasivo e eficaz para suas campanhas publicitárias, redes sociais e descrições de produtos. Em que posso te auxiliar hoje?",
+          "created_at": "2025-05-24T15:50:17.735320+00:00"
+        }
+      ]
+    },
+    {
+      "id": "4050ff59-2612-4eab-9485-b1466b1b572c",
+      "user_id": "teste",
+      "title": "Chat com Copy Ai (1)",
+      "created_at": "2025-05-24T15:50:19.863984+00:00",
+      "updated_at": "2025-05-24T15:50:28.638411+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "ola teste quem e vc",
+          "created_at": "2025-05-24T15:50:26.256345+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Olá! Sou o copy AI, um assistente projetado para criar textos publicitários e conteúdos de marketing de alta qualidade. Estou aqui para ajudar profissionais de marketing e pequenas empresas a desenvolverem copy persuasivo e eficaz para suas campanhas e comunicações. Como posso te ajudar hoje?",
+          "created_at": "2025-05-24T15:50:28.638411+00:00"
+        }
+      ]
+    }
+  ]
+}

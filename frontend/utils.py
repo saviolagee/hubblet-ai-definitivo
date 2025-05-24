@@ -3,11 +3,86 @@ import os
 import json
 import faiss
 import numpy as np
-from mem0 import MemoryClient
+# from mem0 import MemoryClient # Removido
 from typing import List, Dict
 import tempfile
 from openai import OpenAI # Adicionado para gerar_embeddings
 import glob
+import uuid
+from datetime import datetime, timezone
+
+CHAT_HISTORY_FILE = os.path.join(os.path.dirname(__file__), "..", "chat_history.json")
+
+def load_chat_history() -> Dict:
+    """Carrega o histórico de chat do arquivo JSON."""
+    if not os.path.exists(CHAT_HISTORY_FILE):
+        return {"chat_sessions": []}
+    try:
+        with open(CHAT_HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        st.error(f"Erro ao carregar o histórico de chat: {e}")
+        return {"chat_sessions": []}
+
+def save_chat_history(history: Dict):
+    """Salva o histórico de chat no arquivo JSON."""
+    try:
+        with open(CHAT_HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(history, f, indent=2, ensure_ascii=False)
+    except IOError as e:
+        st.error(f"Erro ao salvar o histórico de chat: {e}")
+
+def create_new_chat_session(user_id: str, title: str = "Nova Conversa") -> Dict:
+    """Cria uma nova sessão de chat."""
+    history = load_chat_history()
+    session_id = str(uuid.uuid4())
+    now_iso = datetime.now(timezone.utc).isoformat()
+    new_session = {
+        "id": session_id,
+        "user_id": user_id,
+        "title": title,
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "messages": []
+    }
+    history["chat_sessions"].append(new_session)
+    save_chat_history(history)
+    return new_session
+
+def list_chat_sessions(user_id: str) -> List[Dict]:
+    """Lista todas as sessões de chat para um usuário específico."""
+    history = load_chat_history()
+    return [session for session in history["chat_sessions"] if session["user_id"] == user_id]
+
+def get_chat_session_messages(session_id: str) -> List[Dict]:
+    """Busca todas as mensagens de uma sessão de chat específica."""
+    history = load_chat_history()
+    for session in history["chat_sessions"]:
+        if session["id"] == session_id:
+            return session["messages"]
+    return []
+
+def add_message_to_session(session_id: str, role: str, content: str):
+    """Adiciona uma nova mensagem a uma sessão de chat existente."""
+    history = load_chat_history()
+    session_found = False
+    for session in history["chat_sessions"]:
+        if session["id"] == session_id:
+            now_iso = datetime.now(timezone.utc).isoformat()
+            session["messages"].append({
+                "role": role,
+                "content": content,
+                "created_at": now_iso
+            })
+            session["updated_at"] = now_iso
+            session_found = True
+            break
+    if session_found:
+        save_chat_history(history)
+    else:
+        st.error(f"Sessão com ID '{session_id}' não encontrada.")
+
+
 
 # Funções utilitárias para o frontend Hubblet AI
 
@@ -106,31 +181,20 @@ def processar_arquivos(arquivos: List[st.runtime.uploaded_file_manager.UploadedF
 
     return doc_chunks_total, embeddings_gerados, nomes_arquivos_processados
 
-def inicializar_mem0(username: str, assistente_nome: str, api_key: str) -> MemoryClient | None:
-    """Inicializa o MemoryClient do mem0 para um assistente específico."""
-    if not api_key:
-        st.error("Chave da API Mem0 (MEM0_API_KEY) não encontrada ou não fornecida.")
-        return None
-    try:
-        # Usar um user_id único para cada combinação de usuário e assistente
-        safe_username = username.replace(' ', '_').lower().strip()
-        safe_assistente_nome = assistente_nome.replace(' ', '_').lower().strip()
-        user_id_para_mem0 = f"user_{safe_username}_asst_{safe_assistente_nome}"
-        return MemoryClient(api_key=api_key, user_id=user_id_para_mem0)
-    except Exception as e:
-        st.error(f"Erro ao inicializar Mem0 Client para '{assistente_nome}' (User ID: {user_id_para_mem0 if 'user_id_para_mem0' in locals() else 'N/A'}): {e}")
-        return None
 
-def carregar_ou_inicializar_dados_assistente(username: str, nome_assistente: str, openai_api_key: str, mem0_api_key: str):
+
+def carregar_ou_inicializar_dados_assistente(username: str, nome_assistente: str, openai_api_key: str):
     """Carrega dados de um assistente existente ou inicializa o estado para um novo/selecionado."""
-    st.session_state["chat_history"] = []
+    st.session_state["chat_principal_history"] = [] # Histórico do chat ativo na UI
+    # st.session_state["chat_history_from_mem0"] = [] # Removido
     st.session_state["uploaded_files"] = [] # Lista de nomes de arquivos, não os objetos UploadedFile
     st.session_state["doc_chunks"] = []
     st.session_state["faiss_index"] = inicializar_faiss()
     st.session_state["instrucoes_finais"] = None
-    st.session_state["mem0_instance"] = None
+    # st.session_state["mem0_instance"] = None # Removido
     st.session_state["loading_ia"] = False
     st.session_state["assistente_config"] = {"nome": nome_assistente} # Garante que o nome está na config
+    # st.session_state["chat_history_from_mem0"] = [] # Removido
 
     if nome_assistente == "Nenhum Assistente Salvo" or nome_assistente == "Nenhum" or not nome_assistente.strip():
         st.info("Nenhum assistente específico para carregar. Estado inicializado para um novo assistente ou modo padrão.")
@@ -196,19 +260,8 @@ def carregar_ou_inicializar_dados_assistente(username: str, nome_assistente: str
         except Exception as e:
             st.error(f"Erro ao carregar chunks ou tentar recriar FAISS para '{nome_assistente}': {e}")
 
-    st.session_state["mem0_instance"] = inicializar_mem0(username, nome_assistente, mem0_api_key)
-    
-    if st.session_state["mem0_instance"]:
-        try:
-            # Recupera o histórico de chat do mem0
-            mem0_history = st.session_state["mem0_instance"].get_history()
-            # Converte o histórico do mem0 para o formato esperado pelo st.session_state["chat_history"]
-            # Assumindo que o histórico do mem0 retorna uma lista de objetos com 'role' e 'content'
-            st.session_state["chat_history"] = [{"role": msg.role, "content": msg.content} for msg in mem0_history]
-            if mem0_history:
-                st.info(f"Histórico de chat carregado do Mem0 para '{nome_assistente}'.")
-        except Exception as e:
-            st.error(f"Erro ao carregar histórico do Mem0 para '{nome_assistente}': {e}")
+    # st.session_state["mem0_instance"] = inicializar_mem0(username, nome_assistente, mem0_api_key) # Removido
+    # Lógica de carregamento do Mem0 removida
 
     if loaded_something:
         st.success(f"Dados para o assistente '{nome_assistente}' carregados.")
@@ -276,13 +329,14 @@ def carregar_ou_inicializar_dados_assistente(username: str, nome_assistente: str
         except Exception as e:
             st.error(f"Erro ao carregar chunks ou tentar recriar FAISS para '{nome_assistente}': {e}")
 
-    st.session_state["mem0_instance"] = inicializar_mem0(username, nome_assistente, mem0_api_key)
-    
+    # st.session_state["mem0_instance"] = inicializar_mem0(username, nome_assistente, mem0_api_key) # Removido
+    # Lógica de carregamento do Mem0 removida
+    # st.session_state["chat_history_from_mem0"] = [] # Removido
+
     if loaded_something:
-        st.success(f"Dados para o assistente '{nome_assistente}' carregados.")
+        st.success(f"Dados do assistente '{nome_assistente}' carregados.")
     elif nome_assistente and nome_assistente not in ["Nenhum Assistente Salvo", "Nenhum"]:
-        # Se nenhum arquivo foi carregado, mas um nome de assistente foi fornecido (e não é um placeholder)
-        st.info(f"Nenhum dado salvo encontrado para '{nome_assistente}'. Iniciando com configuração padrão.")
+        st.info(f"Nenhum dado salvo encontrado para '{nome_assistente}'. Começando uma nova configuração.")
 
 # Define o diretório base para salvar/carregar dados dos assistentes
 # __file__ é o caminho para utils.py. Queremos ..\frontend\assistentes_salvos a partir daqui.
@@ -317,11 +371,12 @@ def get_assistentes_existentes() -> List[str]:
 def reset_session():
     """Reseta chaves específicas do estado da sessão."""
     keys_to_reset = [
-        "username", "assistente_selecionado", "assistente_novo", 
-        "chat_history", "chat_mode", "uploaded_files", "assistente_config", 
-        "faiss_index", "doc_chunks", "mem0_instance", "instrucoes_finais",
-        "config_flow_complete", "current_config_step_key", 'config_flow_initial_message_shown',
-        "loading_ia"
+        "username", "assistente_selecionado", "menu_sidebar", 
+        "chat_history", "config_chat_history", "assistente_config", "instrucoes_finais",
+        "uploaded_files", "doc_chunks", "faiss_index", # "mem0_instance", Removido
+        "config_flow_initial_message_shown", "config_flow_complete", "current_config_step_key",
+        "loading_ia", "chat_mode",
+        "chat_principal_history" # "chat_history_from_mem0" Removido
     ]
     for key in keys_to_reset:
         if key in st.session_state:
