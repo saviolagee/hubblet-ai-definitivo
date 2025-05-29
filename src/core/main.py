@@ -1,8 +1,9 @@
 # Entry point do backend Python
 
-from mem0.user_memory import save_memory, load_memory # Importa funções específicas
-from faiss import faiss_retriever # Importa o módulo FAISS
-from langgraph.graph_builder import run_graph # Importa a função de execução do grafo
+from mem0 import MemoryClient # Importa o MemoryClient
+from src.data_persistence.faiss import faiss_retriever # Importa o módulo FAISS
+from src.core.langgraph.graph_builder import run_graph # Importa a função de execução do grafo
+import os # Para acessar variáveis de ambiente
 import numpy as np # Necessário para criar vetores de teste
 
 def main():
@@ -10,8 +11,19 @@ def main():
     # Exemplo de uso da memória
     test_user = "backend_main_test"
     print(f"Testando memória para {test_user}")
-    save_memory(test_user, "Esta é uma mensagem de teste do main.py.") # Chama a função diretamente
-    results = load_memory(test_user, "Qual a mensagem de teste?") # Chama a função diretamente
+    mem0_api_key = os.environ.get("MEM0_API_KEY")
+    if not mem0_api_key:
+        print("AVISO: MEM0_API_KEY não configurada. Testes de memória podem falhar.")
+        mem0_client = MemoryClient() # Inicialização padrão se a chave não estiver presente
+    else:
+        mem0_client = MemoryClient(api_key=mem0_api_key)
+
+    # Adicionando uma memória de teste
+    mem0_client.add("Esta é uma mensagem de teste do main.py.", user_id=test_user, agent_id="main_agent")
+    print("Memória de teste adicionada.")
+
+    # Buscando na memória
+    results = mem0_client.search("Qual a mensagem de teste?", user_id=test_user, agent_id="main_agent")
     print(f"Resultado da busca na memória: {results}")
 
     # Exemplo de uso da busca de conhecimento (FAISS)

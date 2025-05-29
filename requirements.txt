@@ -1,0 +1,12 @@
+streamlit
+openai
+python-dotenv
+faiss-cpu
+numpy
+mem0
+langchain_community
+langchain
+docling
+requests
+mem0ai
+langgraph

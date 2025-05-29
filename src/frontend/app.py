@@ -5,9 +5,9 @@ from datetime import datetime
 import time
 import os
 import json # Adicionado para salvar/carregar metadados de arquivos
-import numpy as np
-import faiss # Mantido aqui para uso direto se necessário, embora utils.py também o tenha
 from dotenv import load_dotenv
+import numpy as np
+from mem0 import MemoryClient
 from openai import OpenAI # Para uso direto na IA de configuração
 
 # Importações de utils (ajustado para importação direta)
@@ -280,19 +280,63 @@ def pagina_chat_assistente():
             if not nome_assistente_config or not nome_assistente_config.strip():
                 st.error("O nome do assistente é obrigatório para salvar.")
             elif not st.session_state.get("instrucoes_finais"):
-                st.error("As instruções finais do assistente são obrigatórias para salvar. Use o chat para gerá-las.")
-            else:
+                # Tenta obter as instruções da última mensagem do assistente no chat de configuração
+                # se não foram explicitamente marcadas como 'instrucoes_finais'
+                last_assistant_message = None
+                if st.session_state.get("config_chat_history"):
+                    for msg in reversed(st.session_state.get("config_chat_history", [])):
+                        if msg["role"] == "assistant":
+                            last_assistant_message = msg["content"]
+                            break
+                
+                if last_assistant_message and len(last_assistant_message) > 50: # Heurística: mensagem longa do assistente
+                    st.session_state["instrucoes_finais"] = last_assistant_message
+                    st.info("Instruções finais inferidas da última resposta do chat de configuração.")
+                else:
+                    st.error("As instruções finais do assistente são obrigatórias para salvar. Use o chat para gerá-las ou certifique-se que a IA as confirmou.")
+                    return # Impede o salvamento se ainda não houver instruções
+            
+            # Prossegue para o salvamento se as instruções foram obtidas (diretamente ou inferidas)
+            if st.session_state.get("instrucoes_finais"):
                 try:
                     # Salvar instruções
-                    path_base = os.path.join("assistentes_salvos") # Diretório na raiz do projeto
+                    # Garante que o caminho seja relativo ao diretório do frontend, onde utils.py espera.
+                    path_base = os.path.join(os.path.dirname(__file__), "assistentes_salvos")
                     os.makedirs(path_base, exist_ok=True)
                     safe_nome_assistente = nome_assistente_config.replace(' ', '_').lower().strip()
                     
-                    instrucoes_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_instrucoes.txt")
-                    with open(instrucoes_file, "w", encoding="utf-8") as f:
+                    config_file_md = os.path.join(path_base, f"assistente_{safe_nome_assistente}_config.md")
+                    with open(config_file_md, "w", encoding="utf-8") as f:
+                        # Adiciona um cabeçalho simples ou apenas salva as instruções diretamente
+                        # Se for salvar apenas as instruções, pode ser f.write(st.session_state["instrucoes_finais"])
+                        # Para manter um formato que possa ser estendido no futuro, podemos adicionar um marcador.
+                        f.write(f"# Configuração do Assistente: {nome_assistente_config}\n\n")
+                        f.write("## Instruções Finais:\n")
                         f.write(st.session_state["instrucoes_finais"])
+
+                    # Adicionar instruções finais ao FAISS index
+                    if st.session_state.get("instrucoes_finais") and openai_api_key:
+                        instrucoes_texto = st.session_state["instrucoes_finais"]
+                        # Usar a função gerar_embeddings de utils.py (precisa ser importada ou chamada via processar_arquivos)
+                        # Para simplificar aqui, vamos chamar a lógica de embedding diretamente se possível
+                        # ou garantir que processar_arquivos pode lidar com texto direto.
+                         # Assumindo que gerar_embeddings está acessível ou podemos replicar a chamada:
+                         
+                        instrucoes_embeddings = gerar_embeddings([instrucoes_texto], openai_api_key)
+                        if instrucoes_embeddings:
+                            if "doc_chunks" not in st.session_state:
+                                st.session_state["doc_chunks"] = []
+                            if "faiss_index" not in st.session_state or st.session_state["faiss_index"] is None:
+                                # A dimensão do embedding é 1536 para text-embedding-ada-002
+                                st.session_state["faiss_index"] = faiss.IndexFlatL2(1536) 
+
+                            st.session_state["doc_chunks"].append(f"Instruções do Assistente: {instrucoes_texto}") # Adiciona com um prefixo
+                            st.session_state["faiss_index"].add(np.array(instrucoes_embeddings[0], dtype=np.float32).reshape(1, -1))
+                            st.info("Instruções do assistente adicionadas ao índice de conhecimento.")
+                        else:
+                            st.warning("Não foi possível gerar embeddings para as instruções do assistente.")
                     
-                    # Salvar FAISS e chunks se existirem
+                    # Salvar FAISS e chunks se existirem (agora pode incluir as instruções)
                     if st.session_state.get("faiss_index") and st.session_state["faiss_index"].ntotal > 0:
                         faiss_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_faiss.index")
                         faiss.write_index(st.session_state["faiss_index"], faiss_file)

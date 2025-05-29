@@ -3,8 +3,8 @@
 from typing import TypedDict, Annotated, Sequence
 import operator
 from langgraph.graph import StateGraph, END
-from backend.memory_management.user_memory import load_memory
-from backend.faiss.faiss_retriever import search_knowledge, DIMENSION
+from mem0 import MemoryClient
+from src.data_persistence.faiss.faiss_retriever import search_knowledge, DIMENSION
 from openai import OpenAI
 import numpy as np
 import os
@@ -20,9 +20,21 @@ class AgentState(TypedDict):
 def retrieve_memory(state: AgentState) -> AgentState:
     print("---NÓ: RECUPERAR MEMÓRIA---")
     user_input = state['user_input']
-    user_id = os.environ.get("USER_ID", "default_user")
-    memory_results = load_memory(user_id, user_input)
-    memory_context = str(memory_results)
+    user_id = os.environ.get("USER_ID", "default_user") # Or however you get the user_id for the graph
+    agent_id = os.environ.get("AGENT_ID", "graph_agent") # Or however you get the agent_id
+    mem0_api_key = os.environ.get("MEM0_API_KEY")
+    if not mem0_api_key:
+        print("AVISO: MEM0_API_KEY não configurada. Testes de memória podem falhar.")
+        mem0_client = MemoryClient()
+    else:
+        mem0_client = MemoryClient(api_key=mem0_api_key)
+    
+    memory_results = mem0_client.search(user_input, user_id=user_id, agent_id=agent_id)
+    # Format results for context; this might need adjustment based on mem0_client.search() output
+    if memory_results:
+        memory_context = "\n".join([res.get('text', '') for res in memory_results])
+    else:
+        memory_context = "Nenhuma memória relevante encontrada."
     print(f"Contexto recuperado da memória: {memory_context}")
     return {"memory_context": memory_context}
 

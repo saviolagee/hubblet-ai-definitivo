@@ -210,7 +210,7 @@ def carregar_ou_inicializar_dados_assistente(username: str, nome_assistente: str
     os.makedirs(path_base, exist_ok=True) # Garante que o diretório exista
 
     safe_nome_assistente = nome_assistente.replace(' ', '_').lower().strip()
-    instrucoes_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_instrucoes.txt")
+    instrucoes_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_config.md") # Alterado para _config.md
     faiss_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_faiss.index")
     chunks_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_chunks.json")
     # Arquivo para armazenar nomes dos arquivos originais associados aos chunks/FAISS
@@ -279,7 +279,7 @@ def carregar_ou_inicializar_dados_assistente(username: str, nome_assistente: str
     os.makedirs(path_base, exist_ok=True) # Garante que o diretório exista
 
     safe_nome_assistente = nome_assistente.replace(' ', '_').lower().strip()
-    instrucoes_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_instrucoes.txt")
+    instrucoes_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_config.md") # Alterado para _config.md
     faiss_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_faiss.index")
     chunks_file = os.path.join(path_base, f"assistente_{safe_nome_assistente}_chunks.json")
     # Arquivo para armazenar nomes dos arquivos originais associados aos chunks/FAISS
@@ -349,12 +349,12 @@ def get_assistentes_existentes() -> List[str]:
     path_base = ASSISTENTES_SAVE_DIR
     assistentes = []
     try:
-        # Procura por arquivos de instrução no diretório atual
-        for f_path in glob.glob(os.path.join(path_base, "assistente_*_instrucoes.txt")):
+        # Procura por arquivos de configuração .md no diretório
+        for f_path in glob.glob(os.path.join(path_base, "assistente_*_config.md")):
             filename = os.path.basename(f_path)
-            if filename.startswith("assistente_") and filename.endswith("_instrucoes.txt"):
-                # Extrai: assistente_NOME_DO_ASSISTENTE_instrucoes.txt -> NOME_DO_ASSISTENTE
-                nome_assistente_safe = filename[len("assistente_"):-len("_instrucoes.txt")]
+            if filename.startswith("assistente_") and filename.endswith("_config.md"):
+                # Extrai: assistente_NOME_DO_ASSISTENTE_config.md -> NOME_DO_ASSISTENTE
+                nome_assistente_safe = filename[len("assistente_"):-len("_config.md")]
                 # Reverter a transformação de 'safe_nome_assistente' para o nome original pode ser complexo
                 # se o nome original continha espaços ou maiúsculas/minúsculas mistas.
                 # Por simplicidade, vamos assumir que o nome salvo (safe) é o que será listado.

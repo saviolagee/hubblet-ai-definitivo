@@ -5,7 +5,9 @@ import numpy as np
 import os
 
 # Diretório onde o índice FAISS será armazenado
-INDEX_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'knowledge', 'faiss_index'))
+# Assume this script is in c:\hubblet ai\src\data_persistence\faiss
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')) # Points to c:\hubblet ai
+INDEX_DIR = os.path.join(BASE_DIR, 'data', 'knowledge_base', 'faiss_index')
 INDEX_FILE = os.path.join(INDEX_DIR, 'knowledge.index')
 
 # Garante que o diretório do índice exista
