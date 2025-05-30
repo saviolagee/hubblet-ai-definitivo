@@ -371,6 +371,8 @@ def pagina_chat_assistente():
 # Página de Chat Principal
 def pagina_chat_principal():
     openai_api_key = os.environ.get("OPENAI_API_KEY", "")
+    # Adicionar inicialização do Mem0 Client
+    mem0_client = MemoryClient() # Assumindo que a configuração (ex: API key) é feita via variáveis de ambiente se necessário
 
     if "username" not in st.session_state or not st.session_state["username"]:
         st.warning("Por favor, faça login primeiro.")
@@ -427,7 +429,7 @@ def pagina_chat_principal():
         st.divider()
         st.subheader("Minhas Conversas")
 
-        if st.button("Nova Conversa", key="new_chat_btn_sidebar", use_container_width=True, type="primary"):
+        if st.button(":heavy_plus_sign: Nova Conversa", key="new_chat_btn_sidebar", use_container_width=True, type="primary"):
             assistente_logado = st.session_state.get("assistente_selecionado_login", None)
             if not assistente_logado or assistente_logado == "Criar novo assistente":
                 st.warning("Por favor, selecione um assistente no login para iniciar uma nova conversa.")
@@ -467,7 +469,7 @@ def pagina_chat_principal():
                 is_active_session = session["id"] == st.session_state.get("current_chat_session_id")
                 button_type = "primary" if is_active_session else "secondary"
                 
-                if st.button(session_display_name, key=f"session_btn_{session['id']}", help=f"Abrir '{session.get('title', 'Conversa')}'", type=button_type, use_container_width=True):
+                if st.button(f":chat_bubble_outline: {session_display_name}", key=f"session_btn_{session['id']}", help=f"Abrir '{session.get('title', 'Conversa')}'", type=button_type, use_container_width=True):
                     st.session_state["current_chat_session_id"] = session["id"]
                     st.session_state["chat_principal_history"] = get_chat_session_messages(session["id"])
                     if st.session_state.get("assistente_selecionado") != assistente_logado_sidebar:
@@ -510,10 +512,31 @@ def pagina_chat_principal():
         if st.session_state.get("instrucoes_finais"):
             contexto_chat_ia.append({"role": "system", "content": st.session_state["instrucoes_finais"]})
         
+        current_user_id = st.session_state["username"]
+        current_agent_id = st.session_state.get('assistente_selecionado')
+        
+        # Adicionar busca de memória do mem0 AQUI
+        if mem0_client and current_user_id:
+            try:
+                retrieved_memories = mem0_client.search(
+                    query=prompt_principal,
+                    user_id=current_user_id
+                )
+                # st.write(f"Memórias recuperadas mem0: {retrieved_memories}") # Para debug
+                if retrieved_memories and isinstance(retrieved_memories, list):
+                    # Supondo que retrieved_memories é uma lista de dicts e cada dict tem uma chave 'memory'
+                    memories_text_list = [mem.get("memory") for mem in retrieved_memories if mem.get("memory")]
+                    if memories_text_list:
+                        memories_content = "\n".join(memories_text_list)
+                        memory_context_message = f"Lembre-se destas interações ou informações passadas relevantes (de mem0):\n{memories_content}"
+                        contexto_chat_ia.insert(0, {"role": "system", "content": memory_context_message})
+            except Exception as e_mem0_search:
+                st.warning(f"Aviso: Não foi possível buscar memórias com mem0: {e_mem0_search}")
+
         mensagens_formatadas_ia = []
         for msg_hist_ia in st.session_state["chat_principal_history"]:
             if msg_hist_ia.get("role") and msg_hist_ia.get("content"):
-                 mensagens_formatadas_ia.append({"role": msg_hist_ia["role"], "content": msg_hist_ia["content"]})
+                mensagens_formatadas_ia.append({"role": msg_hist_ia["role"], "content": msg_hist_ia["content"]})
         contexto_chat_ia.extend(mensagens_formatadas_ia)
 
         if st.session_state.get("faiss_index") and st.session_state["faiss_index"].ntotal > 0 and st.session_state.get("doc_chunks"):
@@ -525,17 +548,19 @@ def pagina_chat_principal():
                 D, I = st.session_state["faiss_index"].search(query_embedding, k=3)
                 
                 retrieved_chunks_content = ""
-                if I[0][0] != -1:
+                if I[0][0] != -1: # Verifica se algum resultado foi encontrado
                     for idx_faiss in I[0]:
-                        if idx_faiss < len(st.session_state["doc_chunks"]):
+                        if idx_faiss != -1 and idx_faiss < len(st.session_state["doc_chunks"]): # Checa se o índice é válido
                             retrieved_chunks_content += st.session_state["doc_chunks"][idx_faiss] + "\n\n"
                 
                 if retrieved_chunks_content:
                     system_message_faiss = f"Use as seguintes informações da base de conhecimento para responder à pergunta do usuário:\n{retrieved_chunks_content}"
-                    contexto_chat_ia.insert(0, {"role": "system", "content": system_message_faiss})
+                    # Inserir após a memória do mem0, se existir, ou no início
+                    insert_index = 1 if (contexto_chat_ia and contexto_chat_ia[0].get("role") == "system" and "mem0" in contexto_chat_ia[0].get("content","")) else 0
+                    contexto_chat_ia.insert(insert_index, {"role": "system", "content": system_message_faiss})
 
             except Exception as e_faiss:
-                st.error(f"Erro durante a busca FAISS: {e_faiss}")
+                st.warning(f"Erro durante a busca FAISS: {e_faiss}")
 
         with st.spinner("Pensando..."):
             try:
@@ -550,12 +575,28 @@ def pagina_chat_principal():
                 add_message_to_session(st.session_state["current_chat_session_id"], "assistant", assistant_response_final)
                 st.session_state["chat_principal_history"].append({"role": "assistant", "content": assistant_response_final})
 
+                # Adicionar a interação ao mem0 AQUI
+                # current_user_id e current_agent_id já definidos acima
+                if mem0_client and current_user_id:
+                    try:
+                        messages_to_add_to_mem0 = [
+                            {"role": "user", "content": prompt_principal},
+                            {"role": "assistant", "content": assistant_response_final}
+                        ]
+                        mem0_client.add(
+                            data=messages_to_add_to_mem0, # O SDK do mem0 usa 'data=' para as mensagens
+                            user_id=current_user_id
+                        )
+                        # st.write("Memória adicionada ao mem0.") # Para debug
+                    except Exception as e_mem0_add:
+                        st.warning(f"Aviso: Não foi possível adicionar memória ao mem0: {e_mem0_add}")
+
                 with st.chat_message("assistant"):
                     st.markdown(assistant_response_final)
                 st.rerun()
 
             except Exception as e_ia_final:
-                st.error(f"Erro ao gerar resposta da IA: {e_ia_final}")
+                st.warning(f"Erro ao gerar resposta da IA: {e_ia_final}")
 
 # Controle de Navegação Principal
 if "menu_sidebar" not in st.session_state:
