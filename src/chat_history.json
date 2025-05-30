@@ -62,15 +62,36 @@
       "user_id": "sav",
       "title": "Chat com Assistente De Teste 1 (1)",
       "created_at": "2025-05-30T00:13:12.105287+00:00",
-      "updated_at": "2025-05-30T00:13:12.105287+00:00",
-      "messages": []
+      "updated_at": "2025-05-30T18:33:07.486870+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome?",
+          "created_at": "2025-05-30T18:32:53.418193+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas não consigo acessar informações pessoais como seu nome. Como posso ajudar você hoje? E sobre o estilo de comunicação, qual sua preferência?",
+          "created_at": "2025-05-30T18:32:55.681783+00:00"
+        },
+        {
+          "role": "user",
+          "content": "meu nome é sav",
+          "created_at": "2025-05-30T18:33:05.657520+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Entendi, Sav! Como posso te ajudar hoje? E sobre o estilo de comunicação, qual sua preferência?",
+          "created_at": "2025-05-30T18:33:07.486870+00:00"
+        }
+      ]
     },
     {
       "id": "ca1719ba-aeca-4348-b9ce-4d7e4fc861a0",
       "user_id": "sav",
       "title": "Chat com Assistente De Teste 1 (2)",
       "created_at": "2025-05-30T00:13:19.284892+00:00",
-      "updated_at": "2025-05-30T00:15:52.430510+00:00",
+      "updated_at": "2025-05-30T18:31:25.815005+00:00",
       "messages": [
         {
           "role": "user",
@@ -91,6 +112,410 @@
           "role": "assistant",
           "content": "Desculpe, mas como assistente de IA, eu não tenho acesso a informações pessoais sobre os usuários. Posso te chamar pelo seu nome de usuário ou por um apelido, se preferir. E quanto ao estilo de comunicação, qual você prefere? (Ex: formal, amigável, técnico, divertido)",
           "created_at": "2025-05-30T00:15:52.430510+00:00"
+        },
+        {
+          "role": "user",
+          "content": "teste",
+          "created_at": "2025-05-30T18:30:52.746235+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Entendi, posso te chamar de \"teste\" então. Como posso te ajudar hoje? E qual estilo de comunicação você prefere para o assistente? (Ex: formal, amigável, técnico, divertido)",
+          "created_at": "2025-05-30T18:30:55.344561+00:00"
+        },
+        {
+          "role": "user",
+          "content": "teste com uma resposta grandew",
+          "created_at": "2025-05-30T18:31:22.914877+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Entendi, \"teste\". Vou te fornecer uma resposta mais detalhada agora. Como posso te ajudar hoje? E sobre o estilo de comunicação, qual você prefere? (Ex: formal, amigável, técnico, divertido)",
+          "created_at": "2025-05-30T18:31:25.815005+00:00"
+        }
+      ]
+    },
+    {
+      "id": "e200c016-54db-4978-89bc-b10b5ab5ceae",
+      "user_id": "não",
+      "title": "Chat com Sav2",
+      "created_at": "2025-05-30T18:24:49.288085+00:00",
+      "updated_at": "2025-05-30T18:24:57.879714+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "teste",
+          "created_at": "2025-05-30T18:24:55.269841+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Entendi, você prefere um estilo de comunicação mais variado! Estou pronto para te ajudar com o que precisar, é só me chamar!",
+          "created_at": "2025-05-30T18:24:57.879714+00:00"
+        }
+      ]
+    },
+    {
+      "id": "7da3ce96-afa2-4d15-9be1-547f00f4f3df",
+      "user_id": "sav",
+      "title": "Chat com Assistente De Teste 1 (3)",
+      "created_at": "2025-05-30T18:33:11.625520+00:00",
+      "updated_at": "2025-05-30T18:33:20.020161+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome?",
+          "created_at": "2025-05-30T18:33:17.957391+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, não tenho acesso a informações pessoais dos usuários. Como posso te ajudar hoje?",
+          "created_at": "2025-05-30T18:33:20.020161+00:00"
+        }
+      ]
+    },
+    {
+      "id": "1ecc30d5-ede9-4af2-929b-fdf0813e76f3",
+      "user_id": "sav",
+      "title": "Chat com Assistente De Teste 1 (4)",
+      "created_at": "2025-05-30T18:38:16.620024+00:00",
+      "updated_at": "2025-05-30T18:38:44.521305+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome?",
+          "created_at": "2025-05-30T18:38:22.474167+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas não tenho acesso a informações pessoais sobre os usuários. Como posso te ajudar hoje?",
+          "created_at": "2025-05-30T18:38:24.536077+00:00"
+        },
+        {
+          "role": "user",
+          "content": "meu nome é sav",
+          "created_at": "2025-05-30T18:38:42.604766+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Olá, Sav! Como posso te ajudar hoje? Qualquer dúvida ou problema, estou aqui para ajudar.",
+          "created_at": "2025-05-30T18:38:44.521305+00:00"
+        }
+      ]
+    },
+    {
+      "id": "4d6f9bd5-5e57-4ce7-9d71-b0e338712bd1",
+      "user_id": "sav",
+      "title": "Chat com Assistente De Teste 1 (5)",
+      "created_at": "2025-05-30T18:38:49.566611+00:00",
+      "updated_at": "2025-05-30T18:38:57.809506+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome?",
+          "created_at": "2025-05-30T18:38:55.330121+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas não tenho acesso a informações pessoais dos usuários. Como posso te ajudar hoje? E qual estilo de comunicação você prefere para o assistente?",
+          "created_at": "2025-05-30T18:38:57.809506+00:00"
+        }
+      ]
+    },
+    {
+      "id": "25df0b58-cdd5-45a6-8a31-24e8fce814d7",
+      "user_id": "sav",
+      "title": "Chat com Assistente De Teste 1 (6)",
+      "created_at": "2025-05-30T18:42:15.404513+00:00",
+      "updated_at": "2025-05-30T18:42:25.278014+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome?",
+          "created_at": "2025-05-30T18:42:21.927280+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Peço desculpas, mas como assistente de teste, não tenho acesso a informações pessoais dos usuários. Posso te chamar de um apelido ou nome fictício se preferir. Em relação à sua preferência de estilo de comunicação, como prefere que eu me comunique?",
+          "created_at": "2025-05-30T18:42:25.278014+00:00"
+        }
+      ]
+    },
+    {
+      "id": "49b5f1a9-0a5c-421a-a27a-ba22bdc6239c",
+      "user_id": "sav",
+      "title": "Chat com Assistente De Teste 1 (7)",
+      "created_at": "2025-05-30T18:45:17.151308+00:00",
+      "updated_at": "2025-05-30T18:45:29.569537+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome?",
+          "created_at": "2025-05-30T18:45:25.505866+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas não tenho acesso a essa informação. Como posso te ajudar hoje?",
+          "created_at": "2025-05-30T18:45:29.569537+00:00"
+        }
+      ]
+    },
+    {
+      "id": "ef65ec88-6518-4c60-908b-1809209ca5d4",
+      "user_id": "savio",
+      "title": "Chat com Sav2",
+      "created_at": "2025-05-30T18:45:44.106713+00:00",
+      "updated_at": "2025-05-30T18:45:55.685375+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "meu nome é savio",
+          "created_at": "2025-05-30T18:45:52.161546+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Oi, Savio! Como posso te ajudar hoje?",
+          "created_at": "2025-05-30T18:45:55.685375+00:00"
+        }
+      ]
+    },
+    {
+      "id": "b0a57152-46e6-4ecd-86e2-56dd31c39b12",
+      "user_id": "savio",
+      "title": "Chat com Sav2 (1)",
+      "created_at": "2025-05-30T18:46:02.135189+00:00",
+      "updated_at": "2025-05-30T18:46:14.144540+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome?",
+          "created_at": "2025-05-30T18:46:09.511246+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas não tenho acesso a informações pessoais dos usuários. Posso te ajudar em mais alguma coisa?",
+          "created_at": "2025-05-30T18:46:14.144540+00:00"
+        }
+      ]
+    },
+    {
+      "id": "f7a3f888-4179-4679-9fcd-f3ef21e24e5c",
+      "user_id": "savio",
+      "title": "Chat com Sav2 (2)",
+      "created_at": "2025-05-30T18:54:32.092424+00:00",
+      "updated_at": "2025-05-30T18:55:23.197943+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T18:55:19.937917+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas não consigo acessar informações pessoais como o seu nome. Como posso te ajudar hoje?",
+          "created_at": "2025-05-30T18:55:23.197943+00:00"
+        }
+      ]
+    },
+    {
+      "id": "de102a2a-1868-49d2-ab26-e343ffa8fa1a",
+      "user_id": "savin",
+      "title": "Chat com Assistente De Teste 1",
+      "created_at": "2025-05-30T18:56:14.261630+00:00",
+      "updated_at": "2025-05-30T18:56:28.420675+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "meu nome é savin",
+          "created_at": "2025-05-30T18:56:24.819261+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Olá, Savin! Como posso te ajudar hoje?",
+          "created_at": "2025-05-30T18:56:28.420675+00:00"
+        }
+      ]
+    },
+    {
+      "id": "b20c2a06-c01c-4c83-9240-ab49c7785cc9",
+      "user_id": "savin",
+      "title": "Chat com Assistente De Teste 1 (1)",
+      "created_at": "2025-05-30T18:56:32.590906+00:00",
+      "updated_at": "2025-05-30T18:56:32.590906+00:00",
+      "messages": []
+    },
+    {
+      "id": "c4fb1067-1600-41f0-ab45-12b6dd373e6d",
+      "user_id": "savin",
+      "title": "Chat com Assistente De Teste 1 (2)",
+      "created_at": "2025-05-30T18:56:37.152954+00:00",
+      "updated_at": "2025-05-30T19:00:52.437158+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome?",
+          "created_at": "2025-05-30T18:56:52.588292+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas não tenho acesso a informações pessoais dos usuários. Como posso te ajudar hoje? E qual estilo de comunicação você prefere para o assistente?",
+          "created_at": "2025-05-30T18:56:55.681955+00:00"
+        },
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T18:57:20.591077+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Peço desculpas, mas como assistente virtual, eu não tenho acesso a informações pessoais dos usuários, incluindo o seu nome. Como posso te ajudar hoje? E qual estilo de comunicação você prefere para o assistente?",
+          "created_at": "2025-05-30T18:57:23.920996+00:00"
+        },
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T18:57:34.329678+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas como assistente virtual, não tenho acesso ao seu nome. Posso ajudar com mais alguma coisa? E qual estilo de comunicação você prefere para o assistente?",
+          "created_at": "2025-05-30T18:57:37.267417+00:00"
+        },
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T18:58:02.190242+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas como assistente virtual, não tenho acesso ao seu nome. Como posso te ajudar hoje? E qual estilo de comunicação você prefere para o assistente?",
+          "created_at": "2025-05-30T18:58:04.770474+00:00"
+        },
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T18:59:43.368625+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Peço desculpas, mas como assistente virtual, não tenho acesso ao seu nome. Como posso te ajudar hoje? E qual estilo de comunicação você prefere para o assistente?",
+          "created_at": "2025-05-30T18:59:47.344793+00:00"
+        },
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T18:59:56.476465+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas como assistente virtual, não tenho acesso ao seu nome. Como posso te ajudar hoje? E qual estilo de comunicação você prefere para o assistente?",
+          "created_at": "2025-05-30T19:00:02.704788+00:00"
+        },
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T19:00:52.437158+00:00"
+        }
+      ]
+    },
+    {
+      "id": "6b0f56e0-0fb7-4425-93f5-1c436abbd1dc",
+      "user_id": "savin",
+      "title": "Chat com Assistente De Teste 1 (3)",
+      "created_at": "2025-05-30T19:01:08.525274+00:00",
+      "updated_at": "2025-05-30T19:01:17.682482+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T19:01:14.376746+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas como assistente virtual, eu não tenho acesso ao seu nome. Posso te chamar de alguma forma específica ou você prefere manter anônimo? E respondendo à sua pergunta anterior, qual estilo de comunicação você prefere para o assistente? (Ex: formal, amigável, técnico, divertido)",
+          "created_at": "2025-05-30T19:01:17.682482+00:00"
+        }
+      ]
+    },
+    {
+      "id": "0ddb18cb-fef7-4a58-881f-2026b97e8567",
+      "user_id": "savio",
+      "title": "Chat com Assistente De Teste 1",
+      "created_at": "2025-05-30T19:03:51.454775+00:00",
+      "updated_at": "2025-05-30T19:04:12.246392+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T19:03:58.789823+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas não consigo acessar informações pessoais. Como posso te ajudar hoje?",
+          "created_at": "2025-05-30T19:04:03.166399+00:00"
+        },
+        {
+          "role": "user",
+          "content": "qual meu nome",
+          "created_at": "2025-05-30T19:04:09.181052+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Desculpe, mas por motivos de segurança e privacidade, não tenho acesso ao seu nome ou outras informações pessoais. Como posso te ajudar hoje? Qual a sua dúvida?",
+          "created_at": "2025-05-30T19:04:12.246392+00:00"
+        }
+      ]
+    },
+    {
+      "id": "47358d6b-2abe-43c5-b5c4-60c559963a91",
+      "user_id": "sav",
+      "title": "Chat com Assistente De Teste 1 (8)",
+      "created_at": "2025-05-30T19:07:59.517733+00:00",
+      "updated_at": "2025-05-30T19:07:59.517733+00:00",
+      "messages": []
+    },
+    {
+      "id": "852ee776-a559-41ff-bd66-b6c275f0f516",
+      "user_id": "sav",
+      "title": "Chat com Assistente De Teste 1 (9)",
+      "created_at": "2025-05-30T19:08:02.476120+00:00",
+      "updated_at": "2025-05-30T19:08:12.103747+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "meu nome é sav",
+          "created_at": "2025-05-30T19:08:08.331853+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Olá, Sav! Como posso te ajudar hoje? E me diga, qual estilo de comunicação você prefere para o assistente? (Ex: formal, amigável, técnico, divertido)",
+          "created_at": "2025-05-30T19:08:12.103747+00:00"
+        }
+      ]
+    },
+    {
+      "id": "681f70dd-de36-476b-967d-59e4bb203035",
+      "user_id": "sav",
+      "title": "Chat com Assistente De Teste 1 (10)",
+      "created_at": "2025-05-30T19:08:33.892710+00:00",
+      "updated_at": "2025-05-30T19:08:33.892710+00:00",
+      "messages": []
+    },
+    {
+      "id": "92a07a47-29c5-46c0-b4c6-f2a795f2c7fe",
+      "user_id": "sav",
+      "title": "Chat com Assistente De Teste 1 (11)",
+      "created_at": "2025-05-30T19:08:38.483822+00:00",
+      "updated_at": "2025-05-30T19:08:46.953108+00:00",
+      "messages": [
+        {
+          "role": "user",
+          "content": "qual meu nome?",
+          "created_at": "2025-05-30T19:08:43.650284+00:00"
+        },
+        {
+          "role": "assistant",
+          "content": "Seu nome é Sav! Como posso ajudar você hoje?",
+          "created_at": "2025-05-30T19:08:46.953108+00:00"
         }
       ]
     }

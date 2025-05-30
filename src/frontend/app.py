@@ -10,6 +10,37 @@ import numpy as np
 from mem0 import MemoryClient
 from openai import OpenAI # Para uso direto na IA de configuração
 
+# --- Início: Funções de Gerenciamento de Tokens ---
+DEFAULT_TOTAL_TOKENS = 2_000_000
+
+def inicializar_tokens_usuario():
+    if "total_tokens" not in st.session_state:
+        st.session_state.total_tokens = DEFAULT_TOTAL_TOKENS
+    if "used_tokens" not in st.session_state:
+        st.session_state.used_tokens = 0
+
+def contar_tokens_texto(texto: str) -> int:
+    if not texto:
+        return 0
+    return len(texto) // 4 # Estimativa simples: 1 token ~ 4 caracteres
+
+def atualizar_tokens_usados(input_texto: str, output_texto: str):
+    inicializar_tokens_usuario() # Garante que os tokens estejam inicializados
+    input_tokens = contar_tokens_texto(input_texto)
+    output_tokens = contar_tokens_texto(output_texto)
+    st.session_state.used_tokens += (input_tokens + output_tokens)
+    # st.rerun() # Descomente se a UI não atualizar imediatamente
+
+def adicionar_milhao_tokens():
+    inicializar_tokens_usuario() # Garante que os tokens estejam inicializados
+    st.session_state.total_tokens += 1_000_000
+    st.rerun() # Força a atualização da UI para refletir o novo total e liberar o chat se estava bloqueado
+
+def verificar_limite_tokens() -> bool:
+    inicializar_tokens_usuario() # Garante que os tokens estejam inicializados
+    return st.session_state.used_tokens >= st.session_state.total_tokens
+# --- Fim: Funções de Gerenciamento de Tokens ---
+
 # Importações de utils (ajustado para importação direta)
 from utils import (
     get_assistentes_existentes,
@@ -370,6 +401,7 @@ def pagina_chat_assistente():
 
 # Página de Chat Principal
 def pagina_chat_principal():
+    inicializar_tokens_usuario() # Inicializa os tokens para a sessão
     openai_api_key = os.environ.get("OPENAI_API_KEY", "")
     # Adicionar inicialização do Mem0 Client
     mem0_client = MemoryClient() # Assumindo que a configuração (ex: API key) é feita via variáveis de ambiente se necessário
@@ -486,6 +518,24 @@ def pagina_chat_principal():
 
     st.markdown(f"<div style='font-size:1.3rem;font-weight:600;margin-bottom:0.5rem;'>Chat com {st.session_state.get('assistente_selecionado', 'Assistente')}</div>", unsafe_allow_html=True)
 
+    # --- Início: Exibição de Tokens e Botão Adicionar ---
+    cols_tokens = st.columns([3, 1])
+    with cols_tokens[0]:
+        st.caption(f"🧠 Uso de IA: {st.session_state.get('used_tokens', 0):,} / {st.session_state.get('total_tokens', DEFAULT_TOTAL_TOKENS):,} tokens")
+    with cols_tokens[1]:
+        if st.button("+1M tokens", key="add_tokens_btn_main_chat", help="Adiciona 1 milhão de tokens ao seu limite (teste)"):
+            adicionar_milhao_tokens()
+    
+    # Barra de progresso opcional (visual)
+    progress_value = 0
+    if st.session_state.get('total_tokens', DEFAULT_TOTAL_TOKENS) > 0:
+        progress_value = min(st.session_state.get('used_tokens', 0) / st.session_state.get('total_tokens', DEFAULT_TOTAL_TOKENS), 1.0)
+    st.progress(progress_value)
+
+    if verificar_limite_tokens():
+        st.warning("Você atingiu o limite de tokens. Adicione mais para continuar.")
+    # --- Fim: Exibição de Tokens e Botão Adicionar ---
+
     chat_container_principal = st.container()
     with chat_container_principal:
         for msg in st.session_state["chat_principal_history"]:
@@ -495,9 +545,14 @@ def pagina_chat_principal():
                 with st.chat_message(role):
                     st.markdown(content)
 
-    prompt_principal = st.chat_input(f"Pergunte ao {st.session_state.get('assistente_selecionado', 'Assistente')}...")
+    # Desabilita o input se o limite de tokens for atingido
+    chat_input_disabled = verificar_limite_tokens()
+    prompt_principal = st.chat_input(f"Pergunte ao {st.session_state.get('assistente_selecionado', 'Assistente')}...", disabled=chat_input_disabled, key="main_chat_input")
 
     if prompt_principal:
+        if verificar_limite_tokens():
+            st.warning("Limite de tokens atingido. Não é possível enviar novas mensagens até adicionar mais tokens.")
+            st.stop() # Interrompe o processamento da mensagem
         if not openai_api_key:
             st.warning("OPENAI_API_KEY não definida. Não é possível gerar resposta.")
             st.stop()
@@ -518,20 +573,92 @@ def pagina_chat_principal():
         # Adicionar busca de memória do mem0 AQUI
         if mem0_client and current_user_id:
             try:
-                retrieved_memories = mem0_client.search(
-                    query=prompt_principal,
-                    user_id=current_user_id
-                )
-                # st.write(f"Memórias recuperadas mem0: {retrieved_memories}") # Para debug
-                if retrieved_memories and isinstance(retrieved_memories, list):
-                    # Supondo que retrieved_memories é uma lista de dicts e cada dict tem uma chave 'memory'
-                    memories_text_list = [mem.get("memory") for mem in retrieved_memories if mem.get("memory")]
-                    if memories_text_list:
-                        memories_content = "\n".join(memories_text_list)
-                        memory_context_message = f"Lembre-se destas interações ou informações passadas relevantes (de mem0):\n{memories_content}"
+                all_retrieved_memories_raw = []
+                processed_memory_ids = set() # Usado para desduplicar memórias se elas tiverem IDs únicos
+
+                # --- ETAPA 1: Busca de Informações de Perfil do Usuário (APENAS com user_id) ---
+                profile_query_text = "Informações de perfil do usuário, nome do usuário, preferências gerais do usuário."
+                try:
+                    search_params_profile = {
+                        "query": profile_query_text,
+                        "user_id": current_user_id,
+                        "limit": 3 # Limite menor, pois esperamos informações concisas de perfil
+                    }
+                    profile_memories = mem0_client.search(**search_params_profile)
+                    if profile_memories and isinstance(profile_memories, list):
+                        for mem in profile_memories:
+                            mem_id = mem.get("id")
+                            if mem_id and mem_id not in processed_memory_ids:
+                                all_retrieved_memories_raw.append(mem)
+                                processed_memory_ids.add(mem_id)
+                            elif not mem_id and mem not in all_retrieved_memories_raw:
+                                all_retrieved_memories_raw.append(mem)
+                except Exception as e_mem0_profile_search:
+                    st.warning(f"Aviso: Não foi possível buscar memórias de perfil com mem0: {e_mem0_profile_search}")
+
+                # --- ETAPA 2: Busca de Memórias Contextuais da Conversa (baseada no prompt_principal) ---
+                # Busca 2.A: Com user_id e agent_id (se agent_id existir)
+                if current_agent_id:
+                    try:
+                        search_params_agent_context = {
+                            "query": prompt_principal,
+                            "user_id": current_user_id,
+                            "agent_id": current_agent_id,
+                            "limit": 5 
+                        }
+                        context_memories_agent = mem0_client.search(**search_params_agent_context)
+                        if context_memories_agent and isinstance(context_memories_agent, list):
+                            for mem in context_memories_agent:
+                                mem_id = mem.get("id") 
+                                if mem_id and mem_id not in processed_memory_ids:
+                                    all_retrieved_memories_raw.append(mem)
+                                    processed_memory_ids.add(mem_id)
+                                elif not mem_id and mem not in all_retrieved_memories_raw:
+                                    all_retrieved_memories_raw.append(mem)
+                    except Exception as e_mem0_agent_context_search:
+                        st.warning(f"Aviso: Não foi possível buscar memórias de contexto (com agent_id) com mem0: {e_mem0_agent_context_search}")
+                
+                # Busca 2.B: Com user_id apenas (para memórias contextuais globais do usuário)
+                try:
+                    search_params_user_context = {
+                        "query": prompt_principal,
+                        "user_id": current_user_id,
+                        "limit": 5
+                    }
+                    context_memories_user = mem0_client.search(**search_params_user_context)
+                    if context_memories_user and isinstance(context_memories_user, list):
+                        for mem in context_memories_user:
+                            mem_id = mem.get("id")
+                            if mem_id and mem_id not in processed_memory_ids:
+                                all_retrieved_memories_raw.append(mem)
+                                processed_memory_ids.add(mem_id)
+                            elif not mem_id and mem not in all_retrieved_memories_raw:
+                                all_retrieved_memories_raw.append(mem)
+                except Exception as e_mem0_user_context_search:
+                    st.warning(f"Aviso: Não foi possível buscar memórias de contexto (apenas user_id) com mem0: {e_mem0_user_context_search}")
+
+                # st.write(f"Memórias recuperadas mem0 (brutas combinadas): {all_retrieved_memories_raw}") # Para debug
+                
+                if all_retrieved_memories_raw:
+                    memories_text_content_list = [mem.get("memory") for mem in all_retrieved_memories_raw if mem.get("memory")]
+                    unique_memories_text = []
+                    seen_texts = set()
+                    for text_content in memories_text_content_list:
+                        if text_content not in seen_texts:
+                            unique_memories_text.append(text_content)
+                            seen_texts.add(text_content)
+                    
+                    if unique_memories_text:
+                        memories_content_for_prompt = "\n---\n".join(unique_memories_text)
+                        memory_context_message = (
+                            f"Considere estas informações de interações passadas (memória de longo prazo via mem0) "
+                            f"ao formular sua resposta. É especialmente importante usar informações pessoais sobre o "
+                            f"usuário (como seu nome, preferências, etc.) se elas estiverem presentes nestas memórias:"
+                            f"\n---\n{memories_content_for_prompt}"
+                        )
                         contexto_chat_ia.insert(0, {"role": "system", "content": memory_context_message})
-            except Exception as e_mem0_search:
-                st.warning(f"Aviso: Não foi possível buscar memórias com mem0: {e_mem0_search}")
+            except Exception as e_mem0_search_generic:
+                st.warning(f"Aviso: Erro genérico durante a busca de memória com mem0: {e_mem0_search_generic}")
 
         mensagens_formatadas_ia = []
         for msg_hist_ia in st.session_state["chat_principal_history"]:
@@ -573,6 +700,8 @@ def pagina_chat_principal():
                 assistant_response_final = response_final.choices[0].message.content
                 
                 add_message_to_session(st.session_state["current_chat_session_id"], "assistant", assistant_response_final)
+                # Atualiza tokens ANTES de adicionar ao histórico e dar rerun, para que a UI reflita o uso correto
+                atualizar_tokens_usados(prompt_principal, assistant_response_final)
                 st.session_state["chat_principal_history"].append({"role": "assistant", "content": assistant_response_final})
 
                 # Adicionar a interação ao mem0 AQUI
@@ -583,10 +712,18 @@ def pagina_chat_principal():
                             {"role": "user", "content": prompt_principal},
                             {"role": "assistant", "content": assistant_response_final}
                         ]
-                        mem0_client.add(
-                            data=messages_to_add_to_mem0, # O SDK do mem0 usa 'data=' para as mensagens
-                            user_id=current_user_id
-                        )
+                        add_params = {
+                            "messages": messages_to_add_to_mem0, # Corrigido de 'data' para 'messages'
+                            "user_id": current_user_id
+                        }
+                        if current_agent_id: # Adiciona agent_id se disponível
+                            add_params["agent_id"] = current_agent_id
+                        # Adicionar try-except para a chamada de adicionar memória
+                        try:
+                            mem0_client.add(**add_params)
+                        except Exception as e_mem0_add:
+                            st.warning(f"Aviso: Não foi possível adicionar a memória ao mem0: {e_mem0_add}")
+                            print(f"DETALHE DO ERRO AO ADICIONAR MEMÓRIA NO MEM0: {type(e_mem0_add).__name__} - {e_mem0_add}")
                         # st.write("Memória adicionada ao mem0.") # Para debug
                     except Exception as e_mem0_add:
                         st.warning(f"Aviso: Não foi possível adicionar memória ao mem0: {e_mem0_add}")
